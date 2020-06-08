@@ -1,6 +1,6 @@
 # Hack CPU Emulator
 
 ## Screenshots
-![screenshot](https://raw.githubusercontent.com/ducaale/hack_cpu_emulator/master/screenshots/screenshot_1.png)
+![screenshot](https://raw.githubusercontent.com/ducaale/hack-cpu-emulator/master/screenshots/screenshot-1.png)
 
-![screenshot](https://raw.githubusercontent.com/ducaale/hack_cpu_emulator/master/screenshots/screenshot_2.png)
+![screenshot](https://raw.githubusercontent.com/ducaale/hack-cpu-emulator/master/screenshots/screenshot-2.png)
