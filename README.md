@@ -1,6 +1,6 @@
 # Hack CPU Emulator
 
-A WIP re-implementation of Nand2tetris CPU Emulator in the terminal.
+A WIP Re-implementation of Nand2tetris' CPU Emulator in the terminal.
 
 ## Requirements
 - Rust v1.42 or later
