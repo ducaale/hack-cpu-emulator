@@ -19,7 +19,8 @@ pub struct App {
     rom_cursor: ListState,
     ram_cursor: ListState,
     input: String,
-    input_mode: InputMode
+    input_mode: InputMode,
+    pub cursor_pos: Option<(u16, u16)>
 }
 
 impl App {
@@ -41,7 +42,8 @@ impl App {
             rom_cursor,
             ram_cursor,
             input: String::new(),
-            input_mode: InputMode::Normal
+            input_mode: InputMode::Normal,
+            cursor_pos: None
         }
     }
 
@@ -83,7 +85,7 @@ impl App {
                         }
                     }
                 }
-                KeyCode::Char('e') => {
+                KeyCode::Char('i') => {
                     self.input_mode = InputMode::Editing;
                 }
                 _ => {}
@@ -152,15 +154,27 @@ impl App {
 
         let screen_block = Block::default().title("[Screen]").borders(Borders::ALL);
 
-        let (text, style) = match self.input_mode {
-            InputMode::Editing => ([Text::raw(format!(
-                " Enter the new value at memory address ({}): {}",
-                self.ram_cursor.selected().unwrap_or(0),
-                self.input
-            ))], Style::default().bg(Color::Yellow).fg(Color::Black)),
-            InputMode::Normal => ([Text::raw(format!(" {}", self.filename))], Style::default().bg(Color::White).fg(Color::Black))
+        let (text, style, cursor_pos) = match self.input_mode {
+            InputMode::Editing => {
+                let prompt = format!(
+                    " Enter the new value at memory address ({}): {}",
+                    self.ram_cursor.selected().unwrap_or(0),
+                    self.input
+                );
+                let cursor_pos = Some((prompt.len() as u16, rows[1].y));
+                let text = [Text::raw(prompt)];
+                let style = Style::default().bg(Color::Yellow).fg(Color::Black);
+                (text, style, cursor_pos)
+            }
+            InputMode::Normal => {
+                let text = [Text::raw(format!(" {}", self.filename))];
+                let style = Style::default().bg(Color::White).fg(Color::Black);
+                let cursor_pos = None;
+                (text, style, cursor_pos)
+            }
         };
         let command_input = Paragraph::new(text.iter()).style(style);
+        self.cursor_pos = cursor_pos;
 
         f.render_stateful_widget(rom_block, column1[0], &mut self.rom_cursor);
         f.render_widget(pc_block, column1[1]);

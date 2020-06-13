@@ -6,7 +6,7 @@ use std::time::Duration;
 use tui::Terminal;
 use tui::backend::CrosstermBackend;
 use crossterm::event::{poll, read, Event, KeyCode};
-use crossterm::{execute, terminal::{EnterAlternateScreen, LeaveAlternateScreen}};
+use crossterm::{execute, cursor, terminal::{EnterAlternateScreen, LeaveAlternateScreen}};
 
 mod assembler;
 mod computer;
@@ -29,12 +29,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-    terminal.hide_cursor()?;
 
     loop {
         terminal.draw(|mut f| app.draw(&mut f))?;
 
-        if poll(Duration::from_millis(500))? {
+        match app.cursor_pos {
+            Some((x, y)) => {
+                terminal.show_cursor()?;
+                write!(terminal.backend_mut(), "{}", cursor::MoveTo(x, y))?;
+            }
+            None => {
+                terminal.hide_cursor()?;
+            }
+        };
+
+        if poll(Duration::from_millis(10))? {
             if let Event::Key(key) = read()? {
                 if key.code == KeyCode::Char('q') {
                     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
