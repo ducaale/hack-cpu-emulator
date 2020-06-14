@@ -42,8 +42,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 terminal.hide_cursor()?;
             }
         };
+        std::io::stdout().flush().ok();
 
-        if poll(Duration::from_millis(10))? {
+        if poll(Duration::from_millis(200))? {
             if let Event::Key(key) = read()? {
                 if key.code == KeyCode::Char('q') {
                     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
