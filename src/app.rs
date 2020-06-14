@@ -129,6 +129,7 @@ impl App {
             });
         let rom_block = List::new(text)
             .block(Block::default().title("[ROM]").borders(Borders::ALL))
+            .highlight_symbol(">")
             .highlight_style(Style::default().fg(Color::Yellow));
 
         let text = self.computer.memory.iter().enumerate()
