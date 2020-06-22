@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use tui::Terminal;
 use tui::backend::CrosstermBackend;
-use crossterm::event::{poll, read, Event, KeyCode};
+use crossterm::event::{poll, read, Event};
 use crossterm::{execute, cursor, terminal::{EnterAlternateScreen, LeaveAlternateScreen}};
 
 mod assembler;
