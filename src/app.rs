@@ -47,7 +47,7 @@ impl App {
         }
     }
 
-    pub fn handle_input(&mut self, event: KeyCode) {
+    pub fn handle_input(&mut self, event: KeyCode) -> bool {
         match self.input_mode {
             InputMode::Editing => match event {
                 KeyCode::Char(c @ '0'..='9') => {
@@ -88,9 +88,13 @@ impl App {
                 KeyCode::Char('i') => {
                     self.input_mode = InputMode::Editing;
                 }
+                KeyCode::Char('q') => {
+                    return true;
+                }
                 _ => {}
             }
         }
+        false
     }
 
     pub fn draw<B: backend::Backend>(&mut self, f: &mut Frame<B>) {

@@ -46,12 +46,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if poll(Duration::from_millis(200))? {
             if let Event::Key(key) = read()? {
-                if key.code == KeyCode::Char('q') {
+                let quit = app.handle_input(key.code);
+                if quit {
                     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
                     terminal.show_cursor()?;
                     break;
                 }
-                app.handle_input(key.code);
             }
         }
     }

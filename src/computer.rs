@@ -4,8 +4,8 @@ pub struct Computer {
     pub d_register: i16,
     pub a_register: i16,
     pub pc: i16,
-    pub rom: [Option<i16>; 100],
-    pub memory: [i16; 100]
+    pub rom: [Option<i16>; 1000],
+    pub memory: [i16; 1000]
 }
 
 impl Computer {
@@ -14,8 +14,8 @@ impl Computer {
             d_register: 0,
             a_register: 0,
             pc: 0,
-            rom: [None; 100],
-            memory: [0; 100]
+            rom: [None; 1000],
+            memory: [0; 1000]
         }
     }
 
