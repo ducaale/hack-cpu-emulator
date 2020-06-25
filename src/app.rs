@@ -1,4 +1,5 @@
 use tui::widgets::{Block, Borders, List, Text, Paragraph, ListState};
+use tui::widgets::canvas::{Canvas, Points};
 use tui::layout::{Layout, Constraint, Alignment, Direction};
 use tui::style::{Style, Color};
 use tui::{Frame, backend};
@@ -20,7 +21,8 @@ pub struct App {
     ram_cursor: ListState,
     input: String,
     input_mode: InputMode,
-    pub cursor_pos: Option<(u16, u16)>
+    pub cursor_pos: Option<(u16, u16)>,
+    is_full_screen: bool
 }
 
 impl App {
@@ -43,14 +45,15 @@ impl App {
             ram_cursor,
             input: String::new(),
             input_mode: InputMode::Normal,
-            cursor_pos: None
+            cursor_pos: None,
+            is_full_screen: false
         }
     }
 
     pub fn handle_input(&mut self, event: KeyCode) -> bool {
         match self.input_mode {
             InputMode::Editing => match event {
-                KeyCode::Char(c @ '0'..='9') => {
+                KeyCode::Char(c @ '0'..='9') | KeyCode::Char(c @ '-') => {
                     self.input.push(c);
                 }
                 KeyCode::Backspace => {
@@ -72,6 +75,9 @@ impl App {
                 KeyCode::Char('n') => {
                     self.computer.step();
                     self.rom_cursor.select(Some(self.computer.pc as usize));
+                }
+                KeyCode::Char('f') => {
+                    self.is_full_screen = !self.is_full_screen;
                 }
                 KeyCode::Char('j') => {
                     if let Some(i) = self.ram_cursor.selected() {
@@ -105,7 +111,7 @@ impl App {
 
         let columns = Layout::default()
             .direction(Direction::Horizontal)
-            .constraints(vec![Constraint::Percentage(25), Constraint::Percentage(25), Constraint::Percentage(50)])
+            .constraints(vec![Constraint::Percentage(20), Constraint::Percentage(20), Constraint::Percentage(60)])
             .split(rows[0]);
 
         let column1 = Layout::default()
@@ -120,7 +126,7 @@ impl App {
         
         let column3 = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
+            .constraints(vec![Constraint::Percentage(60), Constraint::Percentage(40)])
             .split(columns[2]);
 
         let text = self.computer.rom.iter().enumerate()
@@ -157,7 +163,26 @@ impl App {
             .block(Block::default().title("[PC]").borders(Borders::ALL))
             .alignment(Alignment::Center);
 
-        let screen_block = Block::default().title("[Screen]").borders(Borders::ALL);
+        let mut coords = vec![];
+        let mut n = 0;
+        for word in self.computer.memory.iter() {
+            if *word != 0 {
+                let x = (n % 512) as f64;
+                let y = (256 - 1 - (n / 512)) as f64;
+                for i in 0..16 {
+                    coords.push((x + (i as f64), y));
+                }
+            }
+            n += 16;
+        }
+        let dots = Points {coords: &coords, color: Color::White};
+        let screen_block = Canvas::default()
+            .block(Block::default().borders(Borders::ALL).title("[Screen]"))
+            .paint(|ctx| {
+                ctx.draw(&dots);
+            })
+            .x_bounds([0.0, 512.0])
+            .y_bounds([0.0, 256.0]);
 
         let (text, style, cursor_pos) = match self.input_mode {
             InputMode::Editing => {
@@ -181,12 +206,16 @@ impl App {
         let command_input = Paragraph::new(text.iter()).style(style);
         self.cursor_pos = cursor_pos;
 
-        f.render_stateful_widget(rom_block, column1[0], &mut self.rom_cursor);
-        f.render_widget(pc_block, column1[1]);
-        f.render_stateful_widget(ram_block, column2[0], &mut self.ram_cursor);
-        f.render_widget(d_register_block, column2[1]);
-        f.render_widget(a_register_block, column2[2]);
-        f.render_widget(screen_block, column3[0]);
-        f.render_widget(command_input, rows[1]);
+        if self.is_full_screen {
+            f.render_widget(screen_block, rows[0]);
+        } else {
+            f.render_stateful_widget(rom_block, column1[0], &mut self.rom_cursor);
+            f.render_widget(pc_block, column1[1]);
+            f.render_stateful_widget(ram_block, column2[0], &mut self.ram_cursor);
+            f.render_widget(d_register_block, column2[1]);
+            f.render_widget(a_register_block, column2[2]);
+            f.render_widget(screen_block, column3[0]);
+            f.render_widget(command_input, rows[1]);
+        }
     }
 }
