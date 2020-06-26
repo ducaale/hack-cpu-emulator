@@ -12,7 +12,8 @@ use crate::utils::get_bit;
 #[derive(Eq, PartialEq)]
 enum InputMode {
     Normal,
-    Editing
+    Editing,
+    Keyboard
 }
 
 pub struct App {
@@ -32,7 +33,7 @@ impl App {
         rom_cursor.select(Some(0));
 
         let mut ram_cursor = ListState::default();
-        ram_cursor.select(Some(0));
+        ram_cursor.select(Some(KBD_ADDRESS));
 
         let mut computer = Computer::new();
         for (i, instr) in program.iter().enumerate() {
@@ -95,8 +96,20 @@ impl App {
                 KeyCode::Char('r') => {
                     self.input_mode = InputMode::Editing;
                 }
+                KeyCode::Char('b') => {
+                    self.input_mode = InputMode::Keyboard;
+                }
                 KeyCode::Char('q') => {
                     return true;
+                }
+                _ => {}
+            }
+            InputMode::Keyboard => match event {
+                KeyCode::Esc => {
+                    self.input_mode = InputMode::Normal;
+                }
+                KeyCode::Char(c) => {
+                    self.computer.memory[KBD_ADDRESS] = c as i16;
                 }
                 _ => {}
             }
@@ -185,7 +198,7 @@ impl App {
                 let style = Style::default().bg(Color::Yellow).fg(Color::Black);
                 (text, style, cursor_pos)
             }
-            InputMode::Normal => {
+            InputMode::Normal | InputMode::Keyboard => {
                 let text = [Text::raw(format!(" {}", self.filename))];
                 let style = Style::default().bg(Color::White).fg(Color::Black);
                 let cursor_pos = None;
