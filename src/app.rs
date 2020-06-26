@@ -5,8 +5,9 @@ use tui::style::{Style, Color};
 use tui::{Frame, backend};
 use crossterm::event::KeyCode;
 
-use crate::computer::Computer;
+use crate::computer::{Computer, SCR_ADDRESS, KBD_ADDRESS};
 use crate::assembler::to_asm;
+use crate::utils::get_bit;
 
 #[derive(Eq, PartialEq)]
 enum InputMode {
@@ -91,7 +92,7 @@ impl App {
                         }
                     }
                 }
-                KeyCode::Char('i') => {
+                KeyCode::Char('r') => {
                     self.input_mode = InputMode::Editing;
                 }
                 KeyCode::Char('q') => {
@@ -163,19 +164,7 @@ impl App {
             .block(Block::default().title("[PC]").borders(Borders::ALL))
             .alignment(Alignment::Center);
 
-        let mut coords = vec![];
-        let mut n = 0;
-        for word in self.computer.memory.iter() {
-            if *word != 0 {
-                let x = (n % 512) as f64;
-                let y = (256 - 1 - (n / 512)) as f64;
-                for i in 0..16 {
-                    coords.push((x + (i as f64), y));
-                }
-            }
-            n += 16;
-        }
-        let dots = Points {coords: &coords, color: Color::White};
+        let dots = Points {coords: &self.get_screen_dots(), color: Color::White};
         let screen_block = Canvas::default()
             .block(Block::default().borders(Borders::ALL).title("[Screen]"))
             .paint(|ctx| {
@@ -217,5 +206,23 @@ impl App {
             f.render_widget(screen_block, column3[0]);
             f.render_widget(command_input, rows[1]);
         }
+    }
+
+    fn get_screen_dots(&self) -> Vec<(f64, f64)> {
+        let mut coords = vec![];
+        let mut n = 0;
+        for word in self.computer.memory[SCR_ADDRESS..KBD_ADDRESS].iter() {
+            if *word != 0 {
+                let x = (n % 512) as f64;
+                let y = (256 - 1 - (n / 512)) as f64;
+                for i in 0..16 {
+                    if get_bit(*word, i) {
+                        coords.push((x + (i as f64), y));
+                    }
+                }
+            }
+            n += 16;
+        }
+        coords
     }
 }
