@@ -52,7 +52,14 @@ impl App {
         }
     }
 
-    pub fn handle_input(&mut self, event: KeyCode) -> bool {
+    pub fn clear_input_event(&mut self) {
+        match self.input_mode {
+            InputMode::Keyboard => self.computer.memory[KBD_ADDRESS] = 0,
+            _ => {}
+        }
+    }
+
+    pub fn handle_input_event(&mut self, event: KeyCode) -> bool {
         match self.input_mode {
             InputMode::Editing => match event {
                 KeyCode::Char(c @ '0'..='9') | KeyCode::Char(c @ '-') => {
@@ -198,9 +205,15 @@ impl App {
                 let style = Style::default().bg(Color::Yellow).fg(Color::Black);
                 (text, style, cursor_pos)
             }
-            InputMode::Normal | InputMode::Keyboard => {
+            InputMode::Normal => {
                 let text = [Text::raw(format!(" {}", self.filename))];
                 let style = Style::default().bg(Color::White).fg(Color::Black);
+                let cursor_pos = None;
+                (text, style, cursor_pos)
+            }
+            InputMode::Keyboard => {
+                let text = [Text::raw(" [Keyboard mode]")];
+                let style = Style::default().bg(Color::Yellow).fg(Color::Black);
                 let cursor_pos = None;
                 (text, style, cursor_pos)
             }

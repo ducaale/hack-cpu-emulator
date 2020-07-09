@@ -46,13 +46,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if poll(Duration::from_millis(200))? {
             if let Event::Key(key) = read()? {
-                let quit = app.handle_input(key.code);
+                let quit = app.handle_input_event(key.code);
                 if quit {
                     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
                     terminal.show_cursor()?;
                     break;
                 }
             }
+        } else {
+            app.clear_input_event();
         }
     }
 
