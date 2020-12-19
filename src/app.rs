@@ -33,7 +33,7 @@ impl App {
         rom_cursor.select(Some(0));
 
         let mut ram_cursor = ListState::default();
-        ram_cursor.select(Some(KBD_ADDRESS));
+        ram_cursor.select(Some(0));
 
         let mut computer = Computer::new();
         for (i, instr) in program.iter().enumerate() {
@@ -212,7 +212,8 @@ impl App {
                 (text, style, cursor_pos)
             }
             InputMode::Keyboard => {
-                let text = [Text::raw(" [Keyboard mode]")];
+                let prompt = format!(" [Keyboard mode] {}", self.computer.memory[KBD_ADDRESS]);
+                let text = [Text::raw(prompt)];
                 let style = Style::default().bg(Color::Yellow).fg(Color::Black);
                 let cursor_pos = None;
                 (text, style, cursor_pos)
