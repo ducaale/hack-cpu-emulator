@@ -17,9 +17,9 @@ hack-cpu-emulator <assembly file>
 - Press `j` and `k` for navigating the content of the memory.
 - Press `r` to edit the memory at a certain address. Use `Enter` to confirm the edit
   and `Esc` to cancel.
-- Press `b` to enter keyboard mode. 
-- Press `f` to maximize the computer screen
-- Press `q` to quit the program
+- Press `b` to enter keyboard mode. Use `Esc` to exit the mode.
+- Press `f` to toggle maximizing the computer screen.
+- Press `q` to quit the program.
 
 ## Todos
 - [x] Implement screen widget
