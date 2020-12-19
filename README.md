@@ -7,7 +7,7 @@ A WIP Re-implementation of Nand2tetris' CPU Emulator in the terminal.
 
 ## Usage
 ```sh
-hack-cpu-emulator.exe <assembly file>
+hack-cpu-emulator <assembly file>
 ```
 
 ## Todos
