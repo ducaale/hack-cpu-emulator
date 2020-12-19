@@ -6,9 +6,20 @@ A WIP Re-implementation of Nand2tetris' CPU Emulator in the terminal.
 - Rust v1.42 or later
 
 ## Usage
+
+Make sure you obtain an assembly file from [nand2Tetris](https://www.nand2tetris.org/software)
+
 ```sh
 hack-cpu-emulator <assembly file>
 ```
+
+- Press `n` for one CPU tick.
+- Press `j` and `k` for navigating the content of the memory.
+- Press `r` to edit the memory at a certain address. Use `Enter` to confirm the edit
+  and `Esc` to cancel.
+- Press `b` to enter keyboard mode. 
+- Press `f` to maximize the computer screen
+- Press `q` to quit the program
 
 ## Todos
 - [x] Implement screen widget
