@@ -12,8 +12,9 @@ hack-cpu-emulator.exe <assembly file>
 
 ## Todos
 - [x] Implement screen widget
-- [ ] Introduce keyboard inputMode
+- [x] Introduce keyboard inputMode
 - [ ] Support toggling between view modes (binary, hex, decimal, asm)
+- [ ] Time travel
 
 ## Screenshots
 ![screenshot](https://raw.githubusercontent.com/ducaale/hack-cpu-emulator/master/screenshots/screenshot-1.png)
